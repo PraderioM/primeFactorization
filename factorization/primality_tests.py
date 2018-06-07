@@ -129,6 +129,19 @@ def pseudoprime_random_base(n: int) -> bool:
     return is_pseudoprime_to_base_b(n, b)
 
 
+def pseudoprime_primality_test(n: int, k: int=10):
+    """
+    Check if an integer n is a pseudoprime for k random bases.
+    :param n: Integer to check primality on.
+    :param k: Number of times to check if n if a pseudoprime in a random base.
+    :return: True if n passes the pseudoprime primality test.
+    """
+    for i in range(k):
+        if not pseudoprime_random_base(n):
+            return False
+    return True
+
+
 def is_euler_pseudoprime_to_base_b(n: int, b: int=2) -> bool:
     """
     Check if a given number is even or is an euler pseudoprime to a given base
@@ -164,7 +177,7 @@ def solovay_strassen_primality_test(n: int, k: int=10):
     """
     Check if an integer n is an Euler pseudoprime for k random bases.
     :param n: Integer to check primality on.
-    :param k: Number of times to check if n if an euler prime in a random base.
+    :param k: Number of times to check if n if an euler pseudoprime in a random base.
     :return: True if n passes the Solovay-Strassen primality test else False.
     """
     for i in range(k):
