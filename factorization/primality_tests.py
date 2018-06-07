@@ -158,3 +158,79 @@ def euler_pseudoprime_random_base(n: int) -> bool:
         return True
     b = randint(0, n-1)
     return is_euler_pseudoprime_to_base_b(n, b)
+
+
+def solovay_strassen_primality_test(n: int, k: int=10):
+    """
+    Check if an integer n is an Euler pseudoprime for k random bases.
+    :param n: Integer to check primality on.
+    :param k: Number of times to check if n if an euler prime in a random base.
+    :return: True if n passes the Solovay-Strassen primality test else False.
+    """
+    for i in range(k):
+        if not euler_pseudoprime_random_base(n):
+            return False
+    return True
+
+
+def is_strong_pseudoprime_to_base_b(n: int, b: int=2) -> bool:
+    """
+    Check if a given number is even or is an strong pseudoprime to a given base
+    :param n: an integer.
+    :param b: an integer.
+    :return: a boolean indicating if n is an strong pseudoprime in the base b.
+    """
+    if n % 2 == 0:
+        return False
+
+    # we can write n-1 = 2^s*t with t odd.
+    t = n - 1
+    s = 0
+    while t % 2 == 0:
+        s += 1
+        t /= 2
+
+    # get b^t
+    b = get_power_mod_n(b, t, n)
+    for i in range(s):
+        # if b is zero then it has no inverse on Z/(n) and, therefore, n is not prime.
+        if b == 0:
+            return False
+        # if b is -1 mod n then it n is a strong pseudoprime in base b
+        if b + 1 == n:
+            return True
+        # if we reach 1 before reaching -1 then n is not a strong pseudoprime in base b.
+        if b == 1:
+            return False
+        # we compute the next square power of b modulo n (b^(2^{i+1}t)).
+        b = b * b % n
+
+    # This code should not be reached but if -1 was not reached
+    # up until now then n is not a strong pseudoprime in base b.
+    return False
+
+
+def strong_pseudoprime_random_base(n: int) -> bool:
+    """
+    Checks if a given integer is a strong pseudoprime to a random base.
+    :param n: an integer.
+    :return: a boolean indicating if n is a strong pseudoprime in a random base.
+    """
+    n = abs(n)
+    if n <= 1:
+        return True
+    b = randint(0, n-1)
+    return is_strong_pseudoprime_to_base_b(n, b)
+
+
+def miller_rabin_primality_test(n: int, k: int=10):
+    """
+    Check if an integer n is a strong pseudoprime for k random bases.
+    :param n: Integer to check primality on.
+    :param k: Number of times to check if n if a strong pseudoprime in a random base.
+    :return: True if n passes the Solovay-Strassen primality test else False.
+    """
+    for i in range(k):
+        if not strong_pseudoprime_random_base(n):
+            return False
+    return True
