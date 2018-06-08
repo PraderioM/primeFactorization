@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Any
+from typing import Dict, Optional, Any, List, Callable
 
 import factorization.garbell_eratostenes
 import factorization.rho_pollard
@@ -6,6 +6,7 @@ import factorization.p1_pollard
 import factorization.dixon
 import factorization.garbell_quadratic
 import factorization.garbell_cos_nombres
+import factorization.primality_tests
 
 
 def _is_type_error(value: Any, o_type: type, type_name: str):
@@ -223,25 +224,50 @@ def euclidean_algorithm_m_c_d(n: int, m: int) -> int:
     return m
 
 
-def factoritza(n: int, algorithm: str='garbell_eratostenes') -> Factorization:
+def get_primality_tests(primality_tests: List[str], k: int=10) -> List[Callable[[int], bool]]:
+    primality_tests_functions = []
+    for test in primality_tests:
+        test = test.lower()
+        if test == 'trial_division':
+            primality_tests_functions.append(factorization.primality_tests.trial_division)
+        elif test == 'pseudoprime_primality_test':
+            primality_tests_functions.append(lambda n: factorization.primality_tests.pseudoprime_primality_test(n, k))
+        elif test == 'solovay_strassen':
+            primality_tests_functions.append(lambda n: factorization.primality_tests.solovay_strassen_primality_test(n,
+                                                                                                                     k))
+        elif test == 'miller_rabin':
+            primality_tests_functions.append(lambda n: factorization.primality_tests.miller_rabin_primality_test(n, k))
+        else:
+            error_msg = 'Unknown primality test {}.'.format(test)
+            raise ValueError(error_msg)
+
+    return primality_tests_functions
+
+
+def factoritza(n: int, algorithm: str='garbell_eratostenes',
+               primality_tests: Optional[List[str]]=None, k: int=10) -> Factorization:
     # if the input is 0, 1 or -1 the factorization is trivial and we return the result.
+    if primality_tests is None:
+        primality_tests = ['trial_division']
     if n in [0, 1, -1]:
         return Factorization(n)
+
+    primality_tests = get_primality_tests(primality_tests, k=k)
 
     # look for the selected algorithm within all possible algorithms and execute it.
     algorithm = algorithm.lower()
     if algorithm == 'garbell_eratostenes':
         return factorization.garbell_eratostenes.factorize(n)
     elif algorithm == 'rho_pollard':
-        return factorization.rho_pollard.factorize(n)
+        return factorization.rho_pollard.factorize(n, primality_tests=primality_tests)
     elif algorithm == 'p1_pollard':
-        return factorization.p1_pollard.factorize(n)
+        return factorization.p1_pollard.factorize(n, primality_tests=primality_tests)
     elif algorithm == 'dixon':
-        return factorization.dixon.factorize(n)
+        return factorization.dixon.factorize(n, primality_tests=primality_tests)
     elif algorithm == 'garbell_quadratic':
-        return factorization.garbell_quadratic.factorize(n)
+        return factorization.garbell_quadratic.factorize(n, primality_tests=primality_tests)
     elif algorithm == 'garbell_cos_nombres':
-        return factorization.garbell_cos_nombres.factorize(n)
+        return factorization.garbell_cos_nombres.factorize(n, primality_tests=primality_tests)
     else:
         # if there was no algorithm math we raise a value error
         error_msg = 'Unrecognized factorization algorithm {}.'.format(algorithm)

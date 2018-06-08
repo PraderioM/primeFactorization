@@ -18,10 +18,22 @@ It can be one of the following:
     Garbell_cos_nombres
 No distinction made between minuscules and capital letters. Default is Garbell_Eratostenes.""",
                         default='Garbell_Eratostenes.')
+    parser.add_argument('--primality-test', nargs='+',
+                        help="""Primality tests to be used.
+It can be one or more of the following:
+    trial_division
+    pseudoprime_primality_test
+    solovay_strassen
+    miller_rabin
+No distinction made between minuscules and capital letters. Default is Garbell_Eratostenes.""",
+                        default='Garbell_Eratostenes.')
+    parser.add_argument('-k', '--rep', type=int, default=10,
+                        help='Number of times a primality test should be applied.')
     args = parser.parse_args()
 
     # We call the 'factoritza' function that will actually do all the factorizing work.
-    factorized = factoritza(args.number, algorithm=args.algorithm)
+    factorized = factoritza(args.number, algorithm=args.algorithm,
+                            primality_tests=args.primality_test, k=args.rep)
 
     # We print the solution.
     print(factorized)
