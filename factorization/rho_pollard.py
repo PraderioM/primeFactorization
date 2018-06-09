@@ -14,9 +14,10 @@ def factorize(n, primality_tests: Optional[List[Callable[[int], bool]]] = None,
 
     # Initialize rho_function.
     if rho_function is None:
-        # Random integer for rho function
-        aux = randint(0, n - 1)
+        # Random non zero integer for rho function.
+        aux = randint(1, n - 1)
 
+        # Quadratic rho function.
         def rho_function(x):
             return (x ** 2 + aux) % n
 
