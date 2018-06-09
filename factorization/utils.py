@@ -244,11 +244,11 @@ def get_primality_tests(primality_tests: List[str], k: int=10) -> List[Callable[
     return primality_tests_functions
 
 
-def factoritza(n: int, algorithm: str='garbell_eratostenes',
+def factoritza(n: int, algorithm: str='Garbell_cos_nombres',
                primality_tests: Optional[List[str]]=None, k: int=10) -> Factorization:
     # if the input is 0, 1 or -1 the factorization is trivial and we return the result.
     if primality_tests is None:
-        primality_tests = ['trial_division']
+        primality_tests = ['miller_rabin']
     if n in [0, 1, -1]:
         return Factorization(n)
 
