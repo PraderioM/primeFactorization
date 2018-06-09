@@ -1,13 +1,11 @@
 from math import sqrt
 from random import randint
-from typing import List, Callable, Optional
 
 from factorization.utils import Factorization, euclidean_algorithm_m_c_d, add_divisor_factorization
 from factorization.primality_tests import miller_rabin_primality_test, is_decomposed, get_power_mod_n
 
 
-def recursive_step(divisor, factorization: Factorization,
-                   primality_tests: List[Callable[[int], bool]]) -> Factorization:
+def recursive_step(divisor, factorization, primality_tests):
     # Get the factorization of the mcd recursively.
     mcd_factorization = factorize(divisor, primality_tests=primality_tests)
     # append it to the factorization of n.
@@ -21,7 +19,7 @@ def recursive_step(divisor, factorization: Factorization,
     return factorization
 
 
-def get_factorial_modulo_n(a: int, n: int) -> int:
+def get_factorial_modulo_n(a, n):
     prod = 1
     for i in range(1, a + 1):
         prod *= i
@@ -29,9 +27,9 @@ def get_factorial_modulo_n(a: int, n: int) -> int:
     return prod
 
 
-def factorize(n, primality_tests: Optional[List[Callable[[int], bool]]] = None,
-              threshold: Optional[int]=None, a: Optional[int]=None,
-              max_iters: int=100) -> Factorization:
+def factorize(n, primality_tests = None,
+              threshold =None, a =None,
+              max_iters=100):
     # Initialize factorization object.
     factorization = Factorization(n)
     n = abs(n)  # Set n as a positive number to avoid problems.

@@ -1,11 +1,10 @@
 from math import sqrt
 from random import randint
-from typing import Optional, List, Callable
 
-from factorization.utils import euclidean_algorithm_m_c_d, Factorization
+from factorization.utils import euclidean_algorithm_m_c_d
 
 
-def get_order(a: int, n: int) -> int:
+def get_order(a, n):
     """
     Computes the order of the integer a modulo in Z/(n).
     :param a: an integer.
@@ -27,8 +26,8 @@ def get_order(a: int, n: int) -> int:
     return 1
 
 
-def is_decomposed(factorization: Factorization,
-                  primality_tests: Optional[List[Callable[[int], bool]]]=None) -> bool:
+def is_decomposed(factorization,
+                  primality_tests=None):
     """
     Runs a specified list of primality test on the reduced value of a factorization object and uses them to decide if
     the factorization is complete.
@@ -50,7 +49,7 @@ def is_decomposed(factorization: Factorization,
     return True
 
 
-def get_jacobi_symbol(a: int, n: int) -> int:
+def get_jacobi_symbol(a, n):
     """
     :param a: a positive integer (we don't know how to compute fast the Jacobi symbol for negative integers).
     :param n: a positive odd integer.
@@ -100,7 +99,7 @@ def get_power_mod_n(base, power, mod):
     return prod
 
 
-def trial_division(n: int) -> bool:
+def trial_division(n):
     """
     This function tries to divide an integer n by 2, 3, and all integers congruent to 1 or -1 modulo 6
     (candidates to be integers) lower than sqrt(n). If the none of these number is a divisor
@@ -126,7 +125,7 @@ def trial_division(n: int) -> bool:
     return True
 
 
-def is_pseudoprime_to_base_b(n: int, b: int=2) -> bool:
+def is_pseudoprime_to_base_b(n, b=2):
     """
     Checks if a given integer is pseudoprime to a given base or has common factors with that base.
     :param n: an integer.
@@ -141,7 +140,7 @@ def is_pseudoprime_to_base_b(n: int, b: int=2) -> bool:
     return (n - 1) % order == 0
 
 
-def pseudoprime_random_base(n: int) -> bool:
+def pseudoprime_random_base(n):
     """
     Checks if a given integer is pseudoprime to a random base.
     :param n: an integer.
@@ -154,7 +153,7 @@ def pseudoprime_random_base(n: int) -> bool:
     return is_pseudoprime_to_base_b(n, b)
 
 
-def pseudoprime_primality_test(n: int, k: int=10):
+def pseudoprime_primality_test(n, k=10):
     """
     Check if an integer n is a pseudoprime for k random bases.
     :param n: Integer to check primality on.
@@ -167,7 +166,7 @@ def pseudoprime_primality_test(n: int, k: int=10):
     return True
 
 
-def is_euler_pseudoprime_to_base_b(n: int, b: int=2) -> bool:
+def is_euler_pseudoprime_to_base_b(n, b=2):
     """
     Check if a given number is even or is an euler pseudoprime to a given base
     :param n: an integer.
@@ -185,7 +184,7 @@ def is_euler_pseudoprime_to_base_b(n: int, b: int=2) -> bool:
     return (jb_symbol - power_mod_n) % n == 0
 
 
-def euler_pseudoprime_random_base(n: int) -> bool:
+def euler_pseudoprime_random_base(n):
     """
     Checks if a given integer is an euler pseudoprime to a random base.
     :param n: an integer.
@@ -198,7 +197,7 @@ def euler_pseudoprime_random_base(n: int) -> bool:
     return is_euler_pseudoprime_to_base_b(n, b)
 
 
-def solovay_strassen_primality_test(n: int, k: int=10):
+def solovay_strassen_primality_test(n, k=10):
     """
     Check if an integer n is an Euler pseudoprime for k random bases.
     :param n: Integer to check primality on.
@@ -211,7 +210,7 @@ def solovay_strassen_primality_test(n: int, k: int=10):
     return True
 
 
-def is_strong_pseudoprime_to_base_b(n: int, b: int=2) -> bool:
+def is_strong_pseudoprime_to_base_b(n, b=2):
     """
     Check if a given number is even or is an strong pseudoprime to a given base
     :param n: an integer.
@@ -248,7 +247,7 @@ def is_strong_pseudoprime_to_base_b(n: int, b: int=2) -> bool:
     return False
 
 
-def strong_pseudoprime_random_base(n: int) -> bool:
+def strong_pseudoprime_random_base(n):
     """
     Checks if a given integer is a strong pseudoprime to a random base.
     :param n: an integer.
@@ -261,7 +260,7 @@ def strong_pseudoprime_random_base(n: int) -> bool:
     return is_strong_pseudoprime_to_base_b(n, b)
 
 
-def miller_rabin_primality_test(n: int, k: int=10):
+def miller_rabin_primality_test(n, k=10):
     """
     Check if an integer n is a strong pseudoprime for k random bases.
     :param n: Integer to check primality on.

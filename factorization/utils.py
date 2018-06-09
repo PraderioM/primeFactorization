@@ -8,7 +8,7 @@ import factorization.garbell_cos_nombres
 import factorization.primality_tests
 
 
-def _is_type_error(value: Any, o_type: type, type_name: str):
+def _is_type_error(value, o_type, type_name):
     if not isinstance(value, o_type):
         error_msg = 'Expected {} but got {}.'.format(type_name, type(value))
         raise TypeError(error_msg)
@@ -19,7 +19,7 @@ class Factorization(object):
     This class's purpose will be that of storing the factorization of a given integer
     as well as modifying making it easier to print the factorized number.
     """
-    def __init__(self, value: int, factors: Optional[Dict[int, int]]=None):
+    def __init__(self, value, factors=None):
         """
         Initializer.
         :param value: Integer to be factorized.
@@ -81,26 +81,26 @@ class Factorization(object):
     # region properties
     # getter for unit.
     @property
-    def unit(self) -> int:
+    def unit(self):
         return self._unit
 
     # getter for is_zero.
     @property
-    def is_zero(self) -> bool:
+    def is_zero(self):
         return self._is_zero
 
     # getter for reduced_value.
     @property
-    def reduced_value(self) -> int:
+    def reduced_value(self):
         return self._reduced_value
 
     # getter and setter for value.
     @property
-    def value(self) -> int:
+    def value(self):
         return self._value
 
     @value.setter
-    def value(self, value: int):
+    def value(self, value):
         self._is_valid_value(value)
         self._value = abs(value)
 
@@ -110,11 +110,11 @@ class Factorization(object):
 
     # getter and setter for factors.
     @property
-    def factors(self) -> Dict[int, int]:
+    def factors(self):
         return self._factors
 
     @factors.setter
-    def factors(self, factors: Dict[int, int]):
+    def factors(self, factors):
         self._is_valid_factors(factors)
         self._factors = factors
         self._reduced_value = self._value / self.multiply_factors()
@@ -123,7 +123,7 @@ class Factorization(object):
 
     # region input_validations
     @staticmethod
-    def _is_valid_value(value: int) -> bool:
+    def _is_valid_value(value):
         """
         Check if value is a valid input factor.
         :param value: integer.
@@ -133,7 +133,7 @@ class Factorization(object):
         # If an error was not raised the input is correct.
         return True
 
-    def _is_valid_factors(self, factors: Dict[int, int]) -> bool:
+    def _is_valid_factors(self, factors):
         """
         Check if factors is a valid input factor.
         :param factors: Dictionary containing integers as key and their powers as values.
@@ -161,7 +161,7 @@ class Factorization(object):
 
     # endregion
     
-    def add_factor(self, value: int):
+    def add_factor(self, value):
         """
         Add a factor to the decomposition and update the reduced value.
         :param value: factor to be added to the decomposition.
@@ -189,7 +189,7 @@ class Factorization(object):
         # update the reduced value.
         self._reduced_value /= value
 
-    def add_factors(self, factors: List[int]):
+    def add_factors(self, factors):
         """
         Adds a list of factors to the factorization.
         :param factors: List of factors to be added.
@@ -197,7 +197,7 @@ class Factorization(object):
         for factor in factors:
             self.add_factor(factor)
 
-    def multiply_factors(self, factors: Optional[Dict[int, int]]=None) -> bool:
+    def multiply_factors(self, factors=None):
         """
         Multiplies object factors and returns the result.
         :param factors: Dictionary containing integers as key and their powers as values.
@@ -215,7 +215,7 @@ class Factorization(object):
         return prod
 
 
-def add_divisor_factorization(factorization1: Factorization, factorization2: Factorization) -> Factorization:
+def add_divisor_factorization(factorization1, factorization2):
     """
     Improves the factorization of a number via de factorization of a divisor.
     :param factorization1: Factorization objects whose factorization should be improved.
@@ -241,7 +241,7 @@ def add_divisor_factorization(factorization1: Factorization, factorization2: Fac
     return factorization1
 
 
-def euclidean_algorithm_m_c_d(n: int, m: int) -> int:
+def euclidean_algorithm_m_c_d(n, m):
     """
     Applies the euclidean algorithm to find the m.c.d. between two integers.
     :param n: an integer.
@@ -263,7 +263,7 @@ def euclidean_algorithm_m_c_d(n: int, m: int) -> int:
     return m
 
 
-def get_primality_tests(primality_tests: List[str], k: int=10) -> List[Callable[[int], bool]]:
+def get_primality_tests(primality_tests, k=10):
     primality_tests_functions = []
     for test in primality_tests:
         test = test.lower()
@@ -283,8 +283,8 @@ def get_primality_tests(primality_tests: List[str], k: int=10) -> List[Callable[
     return primality_tests_functions
 
 
-def factoritza(n: int, algorithm: str='Garbell_cos_nombres',
-               primality_tests: Optional[List[str]]=None, k: int=10) -> Factorization:
+def factoritza(n, algorithm='Garbell_cos_nombres',
+               primality_tests=None, k=10):
     # if the input is 0, 1 or -1 the factorization is trivial and we return the result.
     if primality_tests is None:
         primality_tests = ['miller_rabin']

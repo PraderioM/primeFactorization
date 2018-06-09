@@ -1,13 +1,12 @@
-from typing import List, Callable, Optional
 from random import randint
 
 from factorization.utils import Factorization, euclidean_algorithm_m_c_d, add_divisor_factorization
 from factorization.primality_tests import miller_rabin_primality_test, is_decomposed
 
 
-def recursive_step(divisor: int, factorization: Factorization,
-                   primality_tests: List[Callable[[int], bool]],
-                   rho_function: Callable[[int], int]) -> Factorization:
+def recursive_step(divisor, factorization,
+                   primality_tests,
+                   rho_function):
     # Get the factorization of the mcd recursively.
     mcd_factorization = factorize(divisor, primality_tests=primality_tests,
                                   rho_function=rho_function)
@@ -24,8 +23,8 @@ def recursive_step(divisor: int, factorization: Factorization,
     return factorization
 
 
-def factorize(n, primality_tests: Optional[List[Callable[[int], bool]]] = None,
-              rho_function: Optional[Callable[[int], int]] = None) -> Factorization:
+def factorize(n, primality_tests=None,
+              rho_function=None):
     """
     Applies the rho pollard factorization method
     :param n: Integer to be factorized.

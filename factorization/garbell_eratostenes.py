@@ -3,7 +3,7 @@ from math import sqrt
 from factorization.utils import Factorization
 
 
-def factorize(n: int) -> Factorization:
+def factorize(n):
     """
     Applies the sieve of eratostenes and fermat to decompose a number in its prime factors.
     :param n:
