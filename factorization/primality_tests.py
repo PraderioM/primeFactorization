@@ -1,7 +1,8 @@
 from math import sqrt
 from random import randint
+from typing import Optional, List, Callable
 
-from factorization.utils import euclidean_algorithm_m_c_d
+from factorization.utils import euclidean_algorithm_m_c_d, Factorization
 
 
 def get_order(a: int, n: int) -> int:
@@ -24,6 +25,29 @@ def get_order(a: int, n: int) -> int:
         order += 1
 
     return 1
+
+
+def is_decomposed(factorization: Factorization,
+                  primality_tests: Optional[List[Callable[[int], bool]]]=None) -> bool:
+    """
+    Runs a specified list of primality test on the reduced value of a factorization object and uses them to decide if
+    the factorization is complete.
+    :param factorization: Factorization object that we want to decide if is factorized or not.
+    :param primality_tests: List of primality tests to be run to decide if the factorization is completed.
+    :return: True if the reduced_value of the factorization object passes all the primality tests. False otherwise.
+    """
+    # Initialize primality tests.
+    if primality_tests is None:
+        primality_tests = [miller_rabin_primality_test]
+
+    # Check if the reduced value of the factorization is a prime number by running all primality tests specified.
+    reduced_value = factorization.reduced_value
+    for primality_test in primality_tests:
+        # If the reduced value does not pass one of the primality tests then it is not prime.
+        if not primality_test(reduced_value):
+            return False
+    # If all primality test were passed we can assume the factorization object is factorized.
+    return True
 
 
 def get_jacobi_symbol(a: int, n: int) -> int:

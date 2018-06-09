@@ -170,12 +170,16 @@ class Factorization(object):
         # check if factor is an integer. If not we raise an error.
         _is_type_error(value, int, 'integer')
         # check if factor is positive. If not we raise an error.
-        if value <= 1:
-            error_msg = 'New factor should be greater than 1 but got {}.'.format(value)
+        if value <= 0:
+            error_msg = 'New factor should be greater than 0 but got {}.'.format(value)
             raise ValueError(error_msg)
         # check if factor is already in the decomposition add if it is not and add one to its power if it is.
         if self._reduced_value % value != 0:
             raise ValueError('Factor does not divide value.')
+
+        # If the factor is 1 we do nothing.
+        if value == 1:
+            return
 
         # add the factor.
         if value in self.factors:
@@ -185,6 +189,14 @@ class Factorization(object):
 
         # update the reduced value.
         self._reduced_value /= value
+
+    def add_factors(self, factors: List[int]):
+        """
+        Adds a list of factors to the factorization.
+        :param factors: List of factors to be added.
+        """
+        for factor in factors:
+            self.add_factor(factor)
 
     def multiply_factors(self, factors: Optional[Dict[int, int]]=None) -> bool:
         """
@@ -204,6 +216,32 @@ class Factorization(object):
         return prod
 
 
+def add_divisor_factorization(factorization1: Factorization, factorization2: Factorization) -> Factorization:
+    """
+    Improves the factorization of a number via de factorization of a divisor.
+    :param factorization1: Factorization objects whose factorization should be improved.
+    :param factorization2: Factorization of a divisor of the value of the first factorization object.
+    :return: Improved factorization.
+    """
+    # First check if the second factorization value actually divides the first factorization reduced value.
+    if factorization2.value % factorization1.reduced_value != 0:
+        raise ValueError('First second factorization value does not divide first factorization reduced value')
+
+    # Extract a list of integers from the dictionary of factors.
+    power_factors = factorization2.factors
+    factors = []
+    for factor in power_factors:
+        factors.extend([factor]*power_factors[factor])
+
+    # Add every factor of the second factorization factors.
+    factorization1.add_factors(factors)
+
+    # We also add the reduced value of the factorization just in case the factorization was not completed.
+    factorization1.add_factor(factorization2.reduced_value)
+
+    return factorization1
+
+
 def euclidean_algorithm_m_c_d(n: int, m: int) -> int:
     """
     Applies the euclidean algorithm to find the m.c.d. between two integers.
@@ -214,6 +252,8 @@ def euclidean_algorithm_m_c_d(n: int, m: int) -> int:
     # make sure numbers are positive.
     n = abs(n)
     m = abs(m)
+    if m == 0:
+        return n
     # apply the algorithm until we find a residual equal to 0.
     while n % m != 0:
         r = n % m  # r is the residual of the division between n and m.
