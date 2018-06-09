@@ -16,8 +16,8 @@ It can be one of the following:
     Dixon
     Garbell_quadratic
     Garbell_cos_nombres
-No distinction made between minuscules and capital letters. Default is Garbell_Eratostenes.""",
-                        default='Garbell_Eratostenes.')
+No distinction made between minuscules and capital letters. Default is Garbell_cos_nombres.""",
+                        default='Garbell_cos_nombres.')
     parser.add_argument('--primality-test', nargs='+',
                         help="""Primality tests to be used.
 It can be one or more of the following:
@@ -25,8 +25,8 @@ It can be one or more of the following:
     pseudoprime_primality_test
     solovay_strassen
     miller_rabin
-No distinction made between minuscules and capital letters. Default is Garbell_Eratostenes.""",
-                        default='Garbell_Eratostenes.')
+No distinction made between minuscules and capital letters. Default is miller_rabin.""",
+                        default='miller_rabin.')
     parser.add_argument('-k', '--rep', type=int, default=10,
                         help='Number of times a primality test should be applied.')
     args = parser.parse_args()

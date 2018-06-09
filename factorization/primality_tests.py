@@ -92,6 +92,7 @@ def trial_division(n: int) -> bool:
     # Try for integers lower than sqrt(n).
     i = 1
     max_value = sqrt(n) + 1
+    # All primes other than 2 and 3 are congruent to 1 or -1 modulo 6.
     while 6 * i - 1 < max_value:
         if n % (6 * i - 1) == 0:
             return False
