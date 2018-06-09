@@ -49,7 +49,7 @@ def factorize(n, primality_tests: Optional[List[Callable[[int], bool]]] = None,
 
     # If a threshold is not set we set a random threshold ourselves.
     if threshold is None:
-        threshold = randint(1, int(sqrt(n))+1)
+        threshold = randint(1, 2*int(sqrt(n)))
 
     # If a value a is not set we set a random a value ourselves.
     if a is None:

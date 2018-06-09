@@ -13,7 +13,6 @@ It can be one of the following:
     Garbell_Eratostenes
     Rho_Pollard
     p-1_Pollard
-    Dixon
     Garbell_quadratic
     Garbell_cos_nombres
 No distinction made between minuscules and capital letters. Default is Garbell_cos_nombres.""",

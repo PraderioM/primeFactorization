@@ -3,7 +3,6 @@ from typing import Dict, Optional, Any, List, Callable
 import factorization.garbell_eratostenes
 import factorization.rho_pollard
 import factorization.p1_pollard
-import factorization.dixon
 import factorization.garbell_quadratic
 import factorization.garbell_cos_nombres
 import factorization.primality_tests
@@ -302,8 +301,6 @@ def factoritza(n: int, algorithm: str='Garbell_cos_nombres',
         return factorization.rho_pollard.factorize(n, primality_tests=primality_tests)
     elif algorithm == 'p1_pollard':
         return factorization.p1_pollard.factorize(n, primality_tests=primality_tests)
-    elif algorithm == 'dixon':
-        return factorization.dixon.factorize(n, primality_tests=primality_tests)
     elif algorithm == 'garbell_quadratic':
         return factorization.garbell_quadratic.factorize(n, primality_tests=primality_tests)
     elif algorithm == 'garbell_cos_nombres':
