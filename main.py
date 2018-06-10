@@ -1,4 +1,5 @@
 import argparse
+from datetime import datetime
 
 import factorization.primality_tests
 
@@ -30,7 +31,12 @@ def factoritza(n, algorithm='Garbell_cos_nombres',
         primality_tests = ['miller_rabin']
     if n in [0, 1, -1]:
         import factorization.utils
-        return factorization.utils.Factorization(n)
+        print('Factorization_start')
+        start_time = datetime.now()
+        result = factorization.utils.Factorization(n)
+        end_time = datetime.now()
+        print('Factorization completed in {} seconds.'.format((end_time-start_time).total_seconds()))
+        return result
 
     primality_tests = get_primality_tests(primality_tests, k=k)
 
@@ -38,19 +44,44 @@ def factoritza(n, algorithm='Garbell_cos_nombres',
     algorithm = algorithm.lower()
     if algorithm == 'garbell_eratostenes':
         import factorization.garbell_eratostenes
-        return factorization.garbell_eratostenes.factorize(n)
+        print('factorization_start')
+        start_time = datetime.now()
+        result = factorization.garbell_eratostenes.factorize(n)
+        end_time = datetime.now()
+        print('Factorization completed in {} seconds.'.format((end_time-start_time).total_seconds()))
+        return result
     elif algorithm == 'rho_pollard':
         import factorization.rho_pollard
-        return factorization.rho_pollard.factorize(n, primality_tests=primality_tests)
+        print('factorization_start')
+        start_time = datetime.now()
+        result = factorization.rho_pollard.factorize(n, primality_tests=primality_tests)
+        end_time = datetime.now()
+        print('Factorization completed in {} seconds.'.format((end_time-start_time).total_seconds()))
+        return result
     elif algorithm == 'p-1_pollard':
         import factorization.p1_pollard
-        return factorization.p1_pollard.factorize(n, primality_tests=primality_tests)
+        print('factorization_start')
+        start_time = datetime.now()
+        result = factorization.p1_pollard.factorize(n, primality_tests=primality_tests)
+        end_time = datetime.now()
+        print('Factorization completed in {} seconds.'.format((end_time-start_time).total_seconds()))
+        return result
     elif algorithm == 'dixon':
         import factorization.dixon
-        return factorization.dixon.factorize(n, primality_tests=primality_tests)
+        print('factorization_start')
+        start_time = datetime.now()
+        result = factorization.dixon.factorize(n, primality_tests=primality_tests)
+        end_time = datetime.now()
+        print('Factorization completed in {} seconds.'.format((end_time-start_time).total_seconds()))
+        return result
     elif algorithm == 'garbell_quadratic':
         import factorization.garbell_quadratic
-        return factorization.garbell_quadratic.factorize(n, primality_tests=primality_tests)
+        print('factorization_start')
+        start_time = datetime.now()
+        result = factorization.garbell_quadratic.factorize(n, primality_tests=primality_tests)
+        end_time = datetime.now()
+        print('Factorization completed in {} seconds.'.format((end_time-start_time).total_seconds()))
+        return result
     else:
         # if there was no algorithm math we raise a value error
         error_msg = 'Unrecognized factorization algorithm {}.'.format(algorithm)

@@ -248,5 +248,5 @@ def factorize(n, primality_tests=None, small_primes=None,
 
     # If we get no divisor then we return the factorization as it is with a warning that a
     # different rho function may be able to complete the factorization.
-    print('Warning unable to decompose value {} using dixon factorization.'.format(factorization.reduced_value))
+    print('Warning unable to decompose value {} using quadratic sieve.'.format(factorization.reduced_value))
     return factorization
