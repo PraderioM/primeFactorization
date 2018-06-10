@@ -445,3 +445,58 @@ def get_element_from_vector(vector, factor_base, mod):
         prod = (prod * get_power_mod_n(factor, power, mod)) % mod
 
     return prod
+
+
+def get_order(a, n):
+    """
+    Computes the order of the integer a modulo in Z/(n).
+    :param a: an integer.
+    :param n: an integer.
+    :return: order of a in Z/(n) or -1 if a has no inverse in Z/(n)
+    """
+    a = abs(a)
+    n = abs(n)
+    order = 1
+    prod = a % n
+    while prod != 1:
+        # if prod is 0 then a has no inverse in Z/(n) and we stop the algorithm.
+        if prod == 0:
+            return -1
+        # compute always the power modulo n in order to avoid overflow.
+        prod = (prod * a) % n
+        order += 1
+
+    return 1
+
+
+def get_jacobi_symbol(a, n):
+    """
+    :param a: a positive integer (we don't know how to compute fast the Jacobi symbol for negative integers).
+    :param n: a positive odd integer.
+    :return: the Jacobi symbol (a/n)
+    """
+    if a < 0:
+        raise ValueError('a should be non negative.')
+    if (n % 2) == 0:
+        raise ValueError('n should be odd but it is not.')
+
+    # get the residue of a modulo n.
+    a = a % n
+    # if a is zero then the Jacobi symbol is 0.
+    if a == 0:
+        return 0
+
+    # Extract all powers of 2 multiplying a and compute the Jacobi symbol for those.
+    prod = 1
+    ratio = 1 if (n - 1) % 8 in [0, 6] else -1  # (2/n)=(-1)^((n^2-1)/8)
+    while (a % 2) == 0:
+        a /= 2
+        prod *= ratio
+
+    # if it is a power of 2 then the Jacobi symbol is prod.
+    if a == 1:
+        return prod
+
+    # Now that a is odd we can apply the quadratic reciprocity.
+    prod = prod if ((a - 1) % 4) == 0 or ((n - 1) % 4) == 0 else -prod  # we combine it with the previous results.
+    return prod * get_jacobi_symbol(n, a)  # apply the algorithm recursively.
