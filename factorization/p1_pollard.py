@@ -19,17 +19,18 @@ def recursive_step(divisor, factorization, primality_tests):
     return factorization
 
 
-def get_factorial_modulo_n(a, n):
-    prod = 1
-    for i in range(1, a + 1):
-        prod *= i
-        prod = prod % n
-    return prod
-
-
 def factorize(n, primality_tests=None,
               threshold=None, a=None,
               max_iters=100):
+    """
+    Applies the p -1 pollard factorization method
+    :param n: Integer to be factorized.
+    :param primality_tests: Primality tests to be used.
+    :param threshold: initial threshold of the algorithm.
+    :param a: initial number of algorithm.
+    :param max_iters: maximum number of times the algorithm should be tried.
+    :return: A Factorization object with the factorized integer.
+    """
     # Initialize factorization object.
     factorization = utils.Factorization(n)
     n = abs(n)  # Set n as a positive number to avoid problems.
@@ -67,9 +68,9 @@ def factorize(n, primality_tests=None,
 
         # If we are not lucky then we get k = threshold! mod n-1 (We are going to make the k power of a so this
         # is equivalent and will reduce computation time.
-        k = get_factorial_modulo_n(threshold, n - 1)
+        k = utils.get_factorial_modulo(threshold, n - 1)
         # Get a^k -1 modulo n.
-        ak = primality.get_power_mod_n(a, k, n) - 1
+        ak = utils.get_power_mod_n(a, k, n) - 1
 
         # check if ak-1 has common divisors with n.
         mcd = utils.euclidean_algorithm_m_c_d(ak-1, n)

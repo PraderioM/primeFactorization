@@ -1,3 +1,6 @@
+from sage.all import *
+
+
 def _is_type_error(value, o_type, type_name):
     if not isinstance(value, o_type):
         error_msg = 'Expected {} but got {}.'.format(type_name, type(value))
@@ -9,13 +12,14 @@ class Factorization(object):
     This class's purpose will be that of storing the factorization of a given integer
     as well as modifying making it easier to print the factorized number.
     """
+
     def __init__(self, value, factors=None):
         """
         Initializer.
         :param value: Integer to be factorized.
         :param factors: Dictionary having as keys the factors of the prime decomposition and as values its powers.
         """
-        
+
         # check that the inputs are correct and store them.
         # value.
         self._is_valid_value(value)
@@ -152,7 +156,7 @@ class Factorization(object):
         return True
 
     # endregion
-    
+
     def add_factor(self, value):
         """
         Add a factor to the decomposition and update the reduced value.
@@ -222,7 +226,7 @@ def add_divisor_factorization(factorization1, factorization2):
     power_factors = factorization2.factors
     factors = []
     for factor in power_factors:
-        factors.extend([factor]*power_factors[factor])
+        factors.extend([factor] * power_factors[factor])
 
     # Add every factor of the second factorization factors.
     factorization1.add_factors(factors)
@@ -254,3 +258,190 @@ def euclidean_algorithm_m_c_d(n, m):
     # once the algorithm is completed m is the m.c.d
     return m
 
+
+def get_power_mod_n(base, power, mod):
+    """
+    Applies an optimized algorithm to get base^power % mod in logarithmic time and with no overflow problems.
+    :param base: base.
+    :param power: power to be given to the base.
+    :param mod: modulo.
+    :return: base^power % mod.
+    """
+    # We apply an optimized algorithm to compute integer powers in logarithmic time.
+    prod = 1
+    ratio = base % mod  # do this to avoid overflow
+    # while we write the power in binary as power=i_ni_{n-1}...i_1 where i_j are either 0 or 1
+    # we compute the product as b^(i_0)(b^2)^(i_1)...(b^{n+1})^(i_n).
+    while power != 0:
+        if (power % 2) == 1:
+            prod *= ratio
+            prod = prod % mod  # do this to avoid overflow.
+            power -= 1
+        # increase the ration and divide the power by 2 to get the next binary digit.
+        ratio *= ratio
+        ratio = ratio % mod  # do this to avoid overflow.
+        power /= 2
+
+    return prod
+
+
+def get_prod_mod_n(factor_list, mod):
+    """
+    :param factor_list: Factors to be multiplied.
+    :param mod: modulo.
+    :return: product of the integers in the factor list modulo mod.
+    """
+    # we multiply all elements in the factor list making modulo at every step to avoid numeric problems
+    prod = 1
+    for factor in factor_list:
+        prod = (prod * factor) % mod  # do this to avoid overflow.
+
+    return prod
+
+
+def get_factorial_modulo(n, mod):
+    """
+    :param n: Number whose factorial we wil compute.
+    :param mod: modulo.
+    :return: n! % mod
+    """
+    prod = 1
+    for i in range(1, n + 1):
+        prod *= i
+        prod = prod % mod
+    return prod
+
+
+def get_lower_primes(bound=1000):
+    """
+    Gets all primes lower than bound.
+    To get these primes it applies the eratostenes sieve method.
+    :param bound: a positive integer to be used as a bound. It must be greater than 1.
+    :return: all primes lower than that bound.
+    """
+    # make sure the bound is positive and greater than 1
+    bound = abs(bound)
+    if bound <= 1:
+        error_msg = 'Bound should be greater than 1 but it is {}.'.format(bound)
+        raise ValueError(error_msg)
+
+    # Initialize sieve.
+    sieve = [i for i in range(2, bound + 1)]
+    prime_list = []
+    # apply_algorithm iteratively
+    while len(sieve) != 0:
+        # get first element of the sieve (it is a prime number).
+        p = sieve.pop(0)
+        prime_list.append(p)
+
+        # remove all values of the sieve divisible by p.
+        sieve = [i for i in sieve if i % p != 0]
+
+    return prime_list
+
+
+def least_absolute_residue(a, n):
+    """
+    Gets the least absolute residue of a modulo n (an integer between -n/2 and n/2 congruent to a modulo n).
+    :param a: integer.
+    :param n: modulo.
+    :return: least absolute residue of a modulo n.
+    """
+    # Get residue.
+    a = a % n
+    # If it is lower or equal to n/2 we return it else we subtract n.
+    return a if a <= n / 2 else (a - n)
+
+
+def is_smooth(candidate, factor_base):
+    """
+    Checks if the candidate is smooth with respect to factor_base
+    :param candidate: An integer that we want to check if is a good candidate or not.
+    :param factor_base: A list of distinct primes and, possibly, -1.
+    :return: True if the least absolute residue modulo mod of the square
+    of candidate is smooth with respect to factor_base else False.
+    """
+    # Check if -1 is in the factor base and act accordingly.
+    if -1 in factor_base:
+        # remove -1 from factor base and take the absolute value of residue.
+        factor_base = [factor for factor in factor_base if factor != -1]
+        candidate = abs(candidate)
+    else:
+        # If residue is negative we return False since -1 in not in the factor_base.
+        if candidate < 0:
+            return False
+
+    # Remove all factors on the factor base from the residue.
+    for factor in factor_base:
+        while candidate % factor == 0:
+            candidate /= factor
+
+    # If what remains is the number 1 we return True else False since there are more factors.
+    return candidate == 1
+
+
+def get_multiplicity(n, factor):
+    """
+    :param n: An integer.
+    :param factor: A possible divisor of n. It must be different than 1 or 0.
+    :return: A positive integer d such that factor^d divides n but factor^(d+1) doesn't.
+    """
+    # The case where factor == -1 we return 1 if n is negative and 0 else.
+    if factor == -1:
+        return int(n < 0)
+
+    d = 0
+    # get the multiplicity by dividing iteratively.
+    while n % factor == 0:
+        n /= factor
+        d += 1
+
+    return d
+
+
+def get_vector_representation(n, factor_base):
+    """
+    :param n: An integer smooth with respect to the factor base.
+    :param factor_base: A list of primes and, possibly, -1.
+    :return: A vector representation of n in the factor base.
+    """
+    return [get_multiplicity(n, factor) for factor in factor_base]
+
+
+def is_linear_dependent(vector_list):
+    """
+    :param vector_list: A list of lists of integers. The lists of integers will be treated as vectors.
+    :return: A tuple consisting on a boolean and a list of zeros and ones.
+             The boolean is True if, when writing the vectors as vectors in Z/(2) we obtain a linearly dependent set
+             and false otherwise.
+             If the boolean is true the list is a list of all zeros except for ones on a minimal linear dependent set.
+             Else is None.
+    """
+    # Build the matrix in sagemath.
+    height = len(vector_list)
+    width = len(vector_list[0])
+    m = matrix(Integers(2), height, width, vector_list)
+
+    # Get the kernel.
+    ker = m.left_kernel()
+    # If the kernel is 0 we return the tuple (False, None),
+    # else we return the tuple (True, v) where v is a non-zero element of the kernel.
+    if ker.dimension() == 0:
+        return False, None
+    else:
+        v = [int(i) for i in ker.basis()[0]]
+        return True, v
+
+
+def get_element_from_vector(vector, factor_base, mod):
+    """
+    :param vector: A list of integers corresponding to an integers expressed in a factor base.
+    :param factor_base: A list of distinct primes and, possibly, -1.
+    :param mod: A positive integer indicating a modulus. All operations are going to be performed modulus mod.
+    :return: The integer corresponding to the vector modulus mod.
+    """
+    prod = 1
+    for power, factor in zip(vector, factor_base):
+        prod = (prod * get_power_mod_n(factor, power, mod)) % mod
+
+    return prod

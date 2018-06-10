@@ -41,6 +41,8 @@ def factoritza(n, algorithm='Garbell_cos_nombres',
         return factorization.rho_pollard.factorize(n, primality_tests=primality_tests)
     elif algorithm == 'p1_pollard':
         return factorization.p1_pollard.factorize(n, primality_tests=primality_tests)
+    elif algorithm == 'dixon':
+        return factorization.dixon.factorize(n, primality_tests=primality_tests)
     elif algorithm == 'garbell_quadratic':
         return factorization.garbell_quadratic.factorize(n, primality_tests=primality_tests)
     elif algorithm == 'garbell_cos_nombres':
@@ -61,11 +63,12 @@ It can be one of the following:
     Garbell_Eratostenes
     Rho_Pollard
     p-1_Pollard
+    Dixon
     Garbell_quadratic
     Garbell_cos_nombres
 No distinction made between minuscules and capital letters. Default is Garbell_cos_nombres.""",
                         # default='Garbell_cos_nombres')
-                        default='p1_pollard')
+                        default='dixon')
     parser.add_argument('--primality-test', nargs='+',
                         help="""Primality tests to be used.
 It can be one or more of the following:

@@ -82,25 +82,6 @@ def get_jacobi_symbol(a, n):
     return prod * get_jacobi_symbol(n, a)  # apply the algorithm recursively.
 
 
-def get_power_mod_n(base, power, mod):
-    # We apply an optimized algorithm to compute integer powers in logarithmic time.
-    prod = 1
-    ratio = base % mod  # do this to avoid overflow
-    # while we write the power in binary as power=i_ni_{n-1}...i_1 where i_j are either 0 or 1
-    # we compute the product as b^(i_0)(b^2)^(i_1)...(b^{n+1})^(i_n).
-    while power != 0:
-        if (power % 2) == 1:
-            prod *= ratio
-            prod = prod % mod  # do this to avoid overflow.
-            power -= 1
-        # increase the ration and divide the power by 2 to get the next binary digit.
-        ratio *= ratio
-        ratio = ratio % mod  # do this to avoid overflow.
-        power /= 2
-
-    return prod
-
-
 def trial_division(n):
     """
     This function tries to divide an integer n by 2, 3, and all integers congruent to 1 or -1 modulo 6
@@ -185,7 +166,7 @@ def is_euler_pseudoprime_to_base_b(n, b=2):
     # get Jacobi symbol.
     jb_symbol = get_jacobi_symbol(b, n)
     # get b^((n-1)/2) mod n.
-    power_mod_n = get_power_mod_n(b, (n-1)/2, n)
+    power_mod_n = utils.get_power_mod_n(b, (n-1)/2, n)
     # return True if the two previous numbers are equal modulo n else False.
     return ((jb_symbol - power_mod_n) % n) == 0
 
@@ -237,7 +218,7 @@ def is_strong_pseudoprime_to_base_b(n, b=2):
         s += 1
         t /= 2
     # get b^t
-    b = get_power_mod_n(b, t, n)
+    b = utils.get_power_mod_n(b, t, n)
     if b == 1:
         return True
     for i in range(s):
