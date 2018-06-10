@@ -1,6 +1,6 @@
 import argparse
 
-import factorization.__init__
+import factorization.primality_tests
 
 
 def get_primality_tests(primality_tests, k=10):
@@ -29,6 +29,7 @@ def factoritza(n, algorithm='Garbell_cos_nombres',
     if primality_tests is None:
         primality_tests = ['miller_rabin']
     if n in [0, 1, -1]:
+        import factorization.utils
         return factorization.utils.Factorization(n)
 
     primality_tests = get_primality_tests(primality_tests, k=k)
@@ -36,14 +37,19 @@ def factoritza(n, algorithm='Garbell_cos_nombres',
     # look for the selected algorithm within all possible algorithms and execute it.
     algorithm = algorithm.lower()
     if algorithm == 'garbell_eratostenes':
+        import factorization.garbell_eratostenes
         return factorization.garbell_eratostenes.factorize(n)
     elif algorithm == 'rho_pollard':
+        import factorization.rho_pollard
         return factorization.rho_pollard.factorize(n, primality_tests=primality_tests)
     elif algorithm == 'p-1_pollard':
+        import factorization.p1_pollard
         return factorization.p1_pollard.factorize(n, primality_tests=primality_tests)
     elif algorithm == 'dixon':
+        import factorization.dixon
         return factorization.dixon.factorize(n, primality_tests=primality_tests)
     elif algorithm == 'garbell_quadratic':
+        import factorization.garbell_quadratic
         return factorization.garbell_quadratic.factorize(n, primality_tests=primality_tests)
     else:
         # if there was no algorithm math we raise a value error

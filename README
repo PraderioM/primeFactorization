@@ -1,0 +1,29 @@
+Project developed by Marco Praderio as part of a curse in Arithmetic at the university of Barcelona.
+This project implements various factorization algorithms as well as multiple primality tests.
+The main.py script can run almost entirely without installing any additional modules.
+However it is necessary to install sagemath in order to execute the factorization algorithms
+'garbell_quadratic' and 'Dixon'.
+The script can be run from the command line by simply executing either one of the following commands.
+
+sage main.py -n (number) --algorithm (algorithm) --primality-test (primality-test)
+python main.py -n (number) --algorithm (algorithm) --primality-test (primality-test)
+
+where:
+(number)        Is an integer to be factorized.
+(algorithm)     Is the factorization algorithm to be implemented and can be one of the following:
+                Garbell_Eratostenes
+                Rho_Pollard
+                p-1_Pollard
+                Dixon
+                Garbell_quadratic
+                No distinction made between minuscules and capital letters. Default is Dixon.
+(primality-test)Is the primality test or tests to be used.
+                It can be one or more of the following:
+                trial_division
+                pseudoprime_primality_test
+                solovay_strassen
+                miller_rabin
+                No distinction made between minuscules and capital letters. Default is miller_rabin.
+
+License:
+Do whatever you want with the code.
