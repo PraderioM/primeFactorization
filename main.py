@@ -39,14 +39,12 @@ def factoritza(n, algorithm='Garbell_cos_nombres',
         return factorization.garbell_eratostenes.factorize(n)
     elif algorithm == 'rho_pollard':
         return factorization.rho_pollard.factorize(n, primality_tests=primality_tests)
-    elif algorithm == 'p1_pollard':
+    elif algorithm == 'p-1_pollard':
         return factorization.p1_pollard.factorize(n, primality_tests=primality_tests)
     elif algorithm == 'dixon':
         return factorization.dixon.factorize(n, primality_tests=primality_tests)
     elif algorithm == 'garbell_quadratic':
         return factorization.garbell_quadratic.factorize(n, primality_tests=primality_tests)
-    elif algorithm == 'garbell_cos_nombres':
-        return factorization.garbell_cos_nombres.factorize(n, primality_tests=primality_tests)
     else:
         # if there was no algorithm math we raise a value error
         error_msg = 'Unrecognized factorization algorithm {}.'.format(algorithm)
@@ -65,9 +63,7 @@ It can be one of the following:
     p-1_Pollard
     Dixon
     Garbell_quadratic
-    Garbell_cos_nombres
-No distinction made between minuscules and capital letters. Default is Garbell_cos_nombres.""",
-                        # default='Garbell_cos_nombres')
+No distinction made between minuscules and capital letters. Default is Dixon.""",
                         default='dixon')
     parser.add_argument('--primality-test', nargs='+',
                         help="""Primality tests to be used.
