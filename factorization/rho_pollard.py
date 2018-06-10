@@ -1,7 +1,7 @@
 from random import randint
 
-from factorization.utils import Factorization, euclidean_algorithm_m_c_d, add_divisor_factorization
-from factorization.primality_tests import miller_rabin_primality_test, is_decomposed
+import factorization.utils as utils
+import factorization.primality_tests as primality
 
 
 def recursive_step(divisor, factorization,
@@ -11,13 +11,13 @@ def recursive_step(divisor, factorization,
     mcd_factorization = factorize(divisor, primality_tests=primality_tests,
                                   rho_function=rho_function)
     # append it to the factorization of n.
-    factorization = add_divisor_factorization(factorization, mcd_factorization)
+    factorization = utils.add_divisor_factorization(factorization, mcd_factorization)
 
     # we do the same with the current reduced value of the factorization.
     reduced_value_factorization = factorize(factorization.reduced_value,
                                             primality_tests=primality_tests,
                                             rho_function=rho_function)
-    factorization = add_divisor_factorization(factorization, reduced_value_factorization)
+    factorization = utils.add_divisor_factorization(factorization, reduced_value_factorization)
 
     # We now break the loop and return the factorized value.
     return factorization
@@ -33,17 +33,17 @@ def factorize(n, primality_tests=None,
     :return: A Factorization object with the factorized integer.
     """
     # Initialize factorization object.
-    factorization = Factorization(n)
+    factorization = utils.Factorization(n)
     n = abs(n)  # Set n as a positive number to avoid problems.
 
     # Initialize primality tests.
     if primality_tests is None:
-        primality_tests = [miller_rabin_primality_test]
+        primality_tests = [primality.miller_rabin_primality_test]
 
     # Check if the Factorization object is already decomposed (if its reduced value is prime).
     # If the reduced value is indeed prime we are done,
     # add the reduced value to the factorization and return the factorization.
-    if is_decomposed(factorization, primality_tests):
+    if primality.is_decomposed(factorization, primality_tests):
         factorization.add_factor(factorization.reduced_value)
         return factorization
 
@@ -72,7 +72,7 @@ def factorize(n, primality_tests=None,
             last_rho_function_image = rho_function(last_rho_function_image)
 
             # get maximum common divisor between n and last_rho_function_image-compare_value.
-            mcd = euclidean_algorithm_m_c_d(n, last_rho_function_image-compare_value)
+            mcd = utils.euclidean_algorithm_m_c_d(n, last_rho_function_image-compare_value)
             # if the mcd is not trivial we continue have found a divisor and we continue the algorithm recursively.
             if mcd not in [1, n]:
                 return recursive_step(mcd, factorization, primality_tests, rho_function)
@@ -83,6 +83,6 @@ def factorize(n, primality_tests=None,
 
     # If we get no divisor then we return the factorization as it is with a warning that a
     # different rho function may be able to complete the factorization.
-    print('Warning unable to decompose value {} using rho pollard factorization.'
-          'Try a different rho function'.format(factorization.reduced_value))
+    print('Warning unable to decompose value {} using rho pollard factorization.'.format(factorization.reduced_value))
+    print('Try a different rho function')
     return factorization

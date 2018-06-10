@@ -1,7 +1,7 @@
 from math import sqrt
 from random import randint
 
-from factorization.utils import euclidean_algorithm_m_c_d
+import factorization.utils as utils
 
 
 def get_order(a, n):
@@ -20,7 +20,7 @@ def get_order(a, n):
         if prod == 0:
             return -1
         # compute always the power modulo n in order to avoid overflow.
-        prod = prod * a % n
+        prod = (prod * a) % n
         order += 1
 
     return 1
@@ -57,27 +57,28 @@ def get_jacobi_symbol(a, n):
     """
     if a < 0:
         raise ValueError('a should be non negative.')
-    if n % 2 == 0:
+    if (n % 2) == 0:
         raise ValueError('n should be odd but it is not.')
 
     # get the residue of a modulo n.
     a = a % n
-    # if it is zero then the Jacobi symbol is 0.
+    # if a is zero then the Jacobi symbol is 0.
     if a == 0:
         return 0
-    # if it is 1 then the Jacobi symbol is 1.
-    if a == 1:
-        return 1
 
     # Extract all powers of 2 multiplying a and compute the Jacobi symbol for those.
     prod = 1
-    ratio = 1 if n - 1 % 8 in [0, 6] else -1  # (2/n)=(-1)^((n^2-1)/8)
-    while a % 2 == 0:
+    ratio = 1 if (n - 1) % 8 in [0, 6] else -1  # (2/n)=(-1)^((n^2-1)/8)
+    while (a % 2) == 0:
         a /= 2
         prod *= ratio
 
+    # if it is a power of 2 then the Jacobi symbol is prod.
+    if a == 1:
+        return prod
+
     # Now that a is odd we can apply the quadratic reciprocity.
-    prod = prod if (a - 1) % 4 == 0 or (n - 1) % 4 == 0 else -prod  # we combine it with the previous results.
+    prod = prod if ((a - 1) % 4) == 0 or ((n - 1) % 4) == 0 else -prod  # we combine it with the previous results.
     return prod * get_jacobi_symbol(n, a)  # apply the algorithm recursively.
 
 
@@ -88,14 +89,15 @@ def get_power_mod_n(base, power, mod):
     # while we write the power in binary as power=i_ni_{n-1}...i_1 where i_j are either 0 or 1
     # we compute the product as b^(i_0)(b^2)^(i_1)...(b^{n+1})^(i_n).
     while power != 0:
-        if power % 2 == 1:
+        if (power % 2) == 1:
             prod *= ratio
             prod = prod % mod  # do this to avoid overflow.
             power -= 1
         # increase the ration and divide the power by 2 to get the next binary digit.
-        ratio *= base
+        ratio *= ratio
         ratio = ratio % mod  # do this to avoid overflow.
         power /= 2
+
     return prod
 
 
@@ -109,7 +111,7 @@ def trial_division(n):
     """
     n = abs(n)
     # Try for 2 and 3.
-    if n % 2 == 0 or n % 3 == 0:
+    if (n % 2) == 0 or (n % 3) == 0:
         return False
 
     # Try for integers lower than sqrt(n).
@@ -117,9 +119,9 @@ def trial_division(n):
     max_value = sqrt(n) + 1
     # All primes other than 2 and 3 are congruent to 1 or -1 modulo 6.
     while 6 * i - 1 < max_value:
-        if n % (6 * i - 1) == 0:
+        if (n % (6 * i - 1)) == 0:
             return False
-        if n % (6 * i + 1) == 0:
+        if (n % (6 * i + 1)) == 0:
             return False
 
     return True
@@ -132,12 +134,12 @@ def is_pseudoprime_to_base_b(n, b=2):
     :param b: an integer.
     :return: a boolean indicating if n is pseudoprime in the base b.
     """
-    if euclidean_algorithm_m_c_d(n, b) == 1:
+    if utils.euclidean_algorithm_m_c_d(n, b) != 1:
         return False
     # get the order of b in Z/(n)
     order = get_order(b, n)
     # return True if  the order divides n - 1 and else return False
-    return (n - 1) % order == 0
+    return ((n - 1) % order) == 0
 
 
 def pseudoprime_random_base(n):
@@ -147,9 +149,9 @@ def pseudoprime_random_base(n):
     :return: a boolean indicating if n is pseudoprime in a random base.
     """
     n = abs(n)
-    if n <= 1:
+    if n <= 3:  # lower or equal than 3 is prime or 1.
         return True
-    b = randint(0, n-1)
+    b = randint(2, n-1)
     return is_pseudoprime_to_base_b(n, b)
 
 
@@ -173,15 +175,19 @@ def is_euler_pseudoprime_to_base_b(n, b=2):
     :param b: an integer.
     :return: a boolean indicating if n is an euler pseudoprime in the base b.
     """
-    if n % 2 == 0:
-        return False
+    # If n is even and not 2 then it is not prime.
+    if (n % 2) == 0:
+        if n == 2:
+            return True
+        else:
+            return False
 
     # get Jacobi symbol.
     jb_symbol = get_jacobi_symbol(b, n)
     # get b^((n-1)/2) mod n.
     power_mod_n = get_power_mod_n(b, (n-1)/2, n)
     # return True if the two previous numbers are equal modulo n else False.
-    return (jb_symbol - power_mod_n) % n == 0
+    return ((jb_symbol - power_mod_n) % n) == 0
 
 
 def euler_pseudoprime_random_base(n):
@@ -191,9 +197,9 @@ def euler_pseudoprime_random_base(n):
     :return: a boolean indicating if n is an euler pseudoprime in a random base.
     """
     n = abs(n)
-    if n <= 1:
+    if n <= 3:   # lower or equal than 3 is prime or 1.
         return True
-    b = randint(0, n-1)
+    b = randint(2, n-1)
     return is_euler_pseudoprime_to_base_b(n, b)
 
 
@@ -217,18 +223,23 @@ def is_strong_pseudoprime_to_base_b(n, b=2):
     :param b: an integer.
     :return: a boolean indicating if n is an strong pseudoprime in the base b.
     """
-    if n % 2 == 0:
-        return False
+    # If n is even it is not prime unless it is 2.
+    if (n % 2) == 0:
+        if n == 2:
+            return True
+        else:
+            return False
 
     # we can write n-1 = 2^s*t with t odd.
     t = n - 1
     s = 0
-    while t % 2 == 0:
+    while (t % 2) == 0:
         s += 1
         t /= 2
-
     # get b^t
     b = get_power_mod_n(b, t, n)
+    if b == 1:
+        return True
     for i in range(s):
         # if b is zero then it has no inverse on Z/(n) and, therefore, n is not prime.
         if b == 0:
@@ -240,7 +251,7 @@ def is_strong_pseudoprime_to_base_b(n, b=2):
         if b == 1:
             return False
         # we compute the next square power of b modulo n (b^(2^{i+1}t)).
-        b = b * b % n
+        b = (b * b) % n
 
     # This code should not be reached but if -1 was not reached
     # up until now then n is not a strong pseudoprime in base b.
@@ -254,9 +265,9 @@ def strong_pseudoprime_random_base(n):
     :return: a boolean indicating if n is a strong pseudoprime in a random base.
     """
     n = abs(n)
-    if n <= 1:
+    if n <= 3:  # lower or equal than 3 is prime or 1.
         return True
-    b = randint(0, n-1)
+    b = randint(2, n-1)
     return is_strong_pseudoprime_to_base_b(n, b)
 
 

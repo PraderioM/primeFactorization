@@ -1,13 +1,3 @@
-from typing import Dict, Optional, Any, List, Callable
-
-import factorization.garbell_eratostenes
-import factorization.rho_pollard
-import factorization.p1_pollard
-import factorization.garbell_quadratic
-import factorization.garbell_cos_nombres
-import factorization.primality_tests
-
-
 def _is_type_error(value, o_type, type_name):
     if not isinstance(value, o_type):
         error_msg = 'Expected {} but got {}.'.format(type_name, type(value))
@@ -25,16 +15,17 @@ class Factorization(object):
         :param value: Integer to be factorized.
         :param factors: Dictionary having as keys the factors of the prime decomposition and as values its powers.
         """
-        if factors is None:
-            factors = {}
         
         # check that the inputs are correct and store them.
         # value.
         self._is_valid_value(value)
         self._value = abs(value)
         # factors.
-        self._is_valid_factors(factors)
-        self._factors = factors
+        if factors is None:
+            self._factors = {}
+        else:
+            self._is_valid_factors(factors)
+            self._factors = factors
 
         # Store sign of input value, check if value is zero and store reduced value.
         self._unit = 1 if value >= 0 else -1
@@ -54,8 +45,7 @@ class Factorization(object):
         # get the original input number.
         number = self._value * self._unit
 
-        aux_str = 'in prime factors ' if self._reduced_value == 1 else ''
-        out_str = 'The integer {} can be decomposed {}as:\n'.format(number, aux_str)
+        out_str = 'The integer {} can be decomposed as:\n'.format(number)
 
         if self._unit == -1:
             out_str += '-1*'
@@ -73,6 +63,8 @@ class Factorization(object):
                 out_str += '^{}'.format(power)
             # Add the '*' symbol for concatenating with the next factor.
             out_str += '*'
+
+        out_str = out_str if self._reduced_value == 1 else '{}{}*'.format(out_str, self._reduced_value)
 
         # remove last '*' symbol.
         out_str = out_str[:-1]
@@ -223,8 +215,8 @@ def add_divisor_factorization(factorization1, factorization2):
     :return: Improved factorization.
     """
     # First check if the second factorization value actually divides the first factorization reduced value.
-    if factorization2.value % factorization1.reduced_value != 0:
-        raise ValueError('First second factorization value does not divide first factorization reduced value')
+    if factorization1.reduced_value % factorization2.value != 0:
+        raise ValueError('Second factorization value does not divide first factorization reduced value')
 
     # Extract a list of integers from the dictionary of factors.
     power_factors = factorization2.factors
@@ -262,50 +254,3 @@ def euclidean_algorithm_m_c_d(n, m):
     # once the algorithm is completed m is the m.c.d
     return m
 
-
-def get_primality_tests(primality_tests, k=10):
-    primality_tests_functions = []
-    for test in primality_tests:
-        test = test.lower()
-        if test == 'trial_division':
-            primality_tests_functions.append(factorization.primality_tests.trial_division)
-        elif test == 'pseudoprime_primality_test':
-            primality_tests_functions.append(lambda n: factorization.primality_tests.pseudoprime_primality_test(n, k))
-        elif test == 'solovay_strassen':
-            primality_tests_functions.append(lambda n: factorization.primality_tests.solovay_strassen_primality_test(n,
-                                                                                                                     k))
-        elif test == 'miller_rabin':
-            primality_tests_functions.append(lambda n: factorization.primality_tests.miller_rabin_primality_test(n, k))
-        else:
-            error_msg = 'Unknown primality test {}.'.format(test)
-            raise ValueError(error_msg)
-
-    return primality_tests_functions
-
-
-def factoritza(n, algorithm='Garbell_cos_nombres',
-               primality_tests=None, k=10):
-    # if the input is 0, 1 or -1 the factorization is trivial and we return the result.
-    if primality_tests is None:
-        primality_tests = ['miller_rabin']
-    if n in [0, 1, -1]:
-        return Factorization(n)
-
-    primality_tests = get_primality_tests(primality_tests, k=k)
-
-    # look for the selected algorithm within all possible algorithms and execute it.
-    algorithm = algorithm.lower()
-    if algorithm == 'garbell_eratostenes':
-        return factorization.garbell_eratostenes.factorize(n)
-    elif algorithm == 'rho_pollard':
-        return factorization.rho_pollard.factorize(n, primality_tests=primality_tests)
-    elif algorithm == 'p1_pollard':
-        return factorization.p1_pollard.factorize(n, primality_tests=primality_tests)
-    elif algorithm == 'garbell_quadratic':
-        return factorization.garbell_quadratic.factorize(n, primality_tests=primality_tests)
-    elif algorithm == 'garbell_cos_nombres':
-        return factorization.garbell_cos_nombres.factorize(n, primality_tests=primality_tests)
-    else:
-        # if there was no algorithm math we raise a value error
-        error_msg = 'Unrecognized factorization algorithm {}.'.format(algorithm)
-        raise ValueError(error_msg)

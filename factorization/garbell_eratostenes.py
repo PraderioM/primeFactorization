@@ -1,6 +1,6 @@
 from math import sqrt
 
-from factorization.utils import Factorization
+import factorization.utils as utils
 
 
 def factorize(n):
@@ -9,7 +9,7 @@ def factorize(n):
     :param n:
     :return:
     """
-    factorization = Factorization(n)
+    factorization = utils.Factorization(n)
 
     # initialize the sieve.
     max_value = int(sqrt(factorization.reduced_value))+1
