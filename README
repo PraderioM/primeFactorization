@@ -25,5 +25,9 @@ where:
                 miller_rabin
                 No distinction made between minuscules and capital letters. Default is miller_rabin.
 
+IMPORTANT:
+Algorithms may work faster if controls for correct inputs are disabled.
+
+
 License:
 Do whatever you want with the code.
