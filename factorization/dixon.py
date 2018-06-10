@@ -101,7 +101,7 @@ def factorize(n, primality_tests=None, factor_base=None, bound=100,
             # We have found a divisor of n by sheer luck.
             return recursive_step(mcd, factorization, primality_tests, factor_base, max_iters)
         # If not check if b - c has a common non trivial factor with n.
-        mcd = utils.euclidean_algorithm_m_c_d(b+-c, n)
+        mcd = utils.euclidean_algorithm_m_c_d(b-c, n)
         if mcd not in [1, n]:
             # We have found a divisor of n by sheer luck.
             return recursive_step(mcd, factorization, primality_tests, factor_base, max_iters)
