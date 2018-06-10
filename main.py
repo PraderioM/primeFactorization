@@ -100,8 +100,8 @@ It can be one of the following:
     p-1_Pollard
     Dixon
     Garbell_quadratic
-No distinction made between minuscules and capital letters. Default is Dixon.""",
-                        default='dixon')
+No distinction made between minuscules and capital letters. Default is p-1_Pollard.""",
+                        default='p-1_Pollard')
     parser.add_argument('--primality-test', nargs='+',
                         help="""Primality tests to be used.
 It can be one or more of the following:
