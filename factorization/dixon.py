@@ -54,7 +54,7 @@ def recursive_step(divisor, factorization, primality_tests, factor_base, max_ite
 
 
 def factorize(n, primality_tests=None, factor_base=None, bound=100,
-              max_iters=100):
+              max_iters=10000):
     # Initialize factorization object.
     factorization = utils.Factorization(n)
     n = abs(n)  # Set n as a positive number to avoid problems.

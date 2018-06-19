@@ -180,7 +180,7 @@ def recursive_step(divisor, factorization, primality_tests, small_primes, max_it
 
 
 def factorize(n, primality_tests=None, small_primes=None,
-              max_iters=100):
+              max_iters=10000):
     # Initialize factorization object.
     factorization = utils.Factorization(n)
     n = abs(n)  # Set n as a positive number to avoid problems.

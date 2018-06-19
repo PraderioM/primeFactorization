@@ -21,7 +21,7 @@ def recursive_step(divisor, factorization, primality_tests):
 
 def factorize(n, primality_tests=None,
               threshold=None, a=None,
-              max_iters=100):
+              max_iters=10000):
     """
     Applies the p -1 pollard factorization method
     :param n: Integer to be factorized.

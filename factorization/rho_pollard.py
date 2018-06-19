@@ -24,12 +24,13 @@ def recursive_step(divisor, factorization,
 
 
 def factorize(n, primality_tests=None,
-              rho_function=None):
+              rho_function=None, max_iters=10000):
     """
     Applies the rho pollard factorization method
     :param n: Integer to be factorized.
     :param primality_tests: Primality tests to be used.
     :param rho_function: rho function to be applied.
+    :param max_iters: maximum number of times the algorithm should be tried.
     :return: A Factorization object with the factorized integer.
     """
     # Initialize factorization object.
@@ -56,30 +57,32 @@ def factorize(n, primality_tests=None,
         def rho_function(x):
             return (x ** 2 + aux) % n
 
-    # If not we run a step of the rho Pollard factorization algorithm.
-    # We initialize the set of successive images of the rho function with a random integer between 0 and n.
-    last_rho_function_image = randint(0, n - 1)
-    compare_value = last_rho_function_image
-    n_bits = 1  # number of iterations to be performed before next compare value change.
-    # The loop cycle can at most be as long as n.
-    # If we have to do loops that long we will know wer are stuck in a cycle and will stop.
-    # We could find earlier that we are stuck in a cycle by checking if a certain value repeats
-    # itself but it would be more time consuming.
-    while n_bits < n:
-        # We iterate over the n_bits +1 bits digits.
-        for i in range(n_bits):
-            # get next image of rho function
-            last_rho_function_image = rho_function(last_rho_function_image)
+    # Try the algorithm at most max_iters times.
+    for i in range(max_iters):
+        # If not we run a step of the rho Pollard factorization algorithm.
+        # We initialize the set of successive images of the rho function with a random integer between 0 and n.
+        last_rho_function_image = randint(0, n - 1)
+        compare_value = last_rho_function_image
+        n_bits = 1  # number of iterations to be performed before next compare value change.
+        # The loop cycle can at most be as long as n.
+        # If we have to do loops that long we will know wer are stuck in a cycle and will stop.
+        # We could find earlier that we are stuck in a cycle by checking if a certain value repeats
+        # itself but it would be more time consuming.
+        while n_bits < n:
+            # We iterate over the n_bits +1 bits digits.
+            for i in range(n_bits):
+                # get next image of rho function
+                last_rho_function_image = rho_function(last_rho_function_image)
 
-            # get maximum common divisor between n and last_rho_function_image-compare_value.
-            mcd = utils.euclidean_algorithm_m_c_d(n, last_rho_function_image-compare_value)
-            # if the mcd is not trivial we continue have found a divisor and we continue the algorithm recursively.
-            if mcd not in [1, n]:
-                return recursive_step(mcd, factorization, primality_tests, rho_function)
+                # get maximum common divisor between n and last_rho_function_image-compare_value.
+                mcd = utils.euclidean_algorithm_m_c_d(n, last_rho_function_image-compare_value)
+                # if the mcd is not trivial we continue have found a divisor and we continue the algorithm recursively.
+                if mcd not in [1, n]:
+                    return recursive_step(mcd, factorization, primality_tests, rho_function)
 
-            # Else we append the value of the rho cycle to the list.
-        # Increase the number of bits. This meets well with the while loop condition.
-        n_bits *= 2
+                # Else we append the value of the rho cycle to the list.
+            # Increase the number of bits. This meets well with the while loop condition.
+            n_bits *= 2
 
     # If we get no divisor then we return the factorization as it is with a warning that a
     # different rho function may be able to complete the factorization.
