@@ -122,11 +122,16 @@ def factoritza(n, algorithms=None,
     :param low_primes_bound: Bound for lower primes to be removed with Eratostenes Sieve algorithm.
     :return: A Factorize object containing the factorized integer.
     """
-
+    # Initialize algorithm names.
     if algorithms is None:
-        algorithms = ['Garbell_Eratostenes', 'p-1_Pollard', 'Rho_Pollard']
+        algorithms = ['garbell_eratostenes', 'p-1_pollard', 'rho_pollard']
+    else:
+        algorithms = [algorithm.lower() for algorithm in algorithms]
+    # Initialize primality tests names.
     if tests is None:
         tests = ['miller_rabin']
+    else:
+        tests = [test.lower() for test in tests]
 
     # if the input is 0, 1 or -1 the factorization is trivial and we return the result.
     if n in [0, 1, -1]:
@@ -145,9 +150,7 @@ def factoritza(n, algorithms=None,
         prime_list = None
 
     # we get functions corresponding to the selected primality tests and algorithms.
-    print('Initializing primality tests.')
     tests = get_primality_tests(tests, k=k)
-    print('Initializing algorithms.')
     find_divisor_algorithms = get_find_divisor_algorithms(algorithms, prime_list)
 
     # Factorization start.
@@ -199,7 +202,7 @@ if __name__ == '__main__':
                              "\tGarbell_quadratic\n"
                              "No distinction made between minuscules and capital letters.\n"
                              "Default is Garbell_Eratostenes Rho_Pollard p-1_Pollard.",
-                        default='Garbell_Eratostenes p-1_Pollard Rho_Pollard')
+                        default=['Garbell_Eratostenes', 'p-1_Pollard', 'Rho_Pollard'])
     parser.add_argument('--primality-test', nargs='+',
                         help="Primality tests to be used.\n"
                              "It can be one or more of the following:\n"
@@ -213,9 +216,15 @@ if __name__ == '__main__':
                         help='Number of times a primality test should be applied.')
     args = parser.parse_args()
 
+    if not isinstance(args.algorithm, list):
+        args.algorithm = [args.algorithm]
+
+    if not isinstance(args.primality_test, list):
+        args.primality_test = [args.primality_test]
+
     # We call the 'factoritza' function that will actually do all the factorizing work.
-    factorized = factoritza(args.number, algorithms=[args.algorithm],
-                            tests=[args.primality_test], k=args.rep,
+    factorized = factoritza(args.number, algorithms=args.algorithm,
+                            tests=args.primality_test, k=args.rep,
                             max_iters=args.max_iters)
 
     # We print the solution.

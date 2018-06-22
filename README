@@ -14,13 +14,14 @@ where:
 (number)        Is an integer to be factorized.
 (max-iters)     Maximum number of times the factorization algorithm should be tried at every factorization step.
                 Default is 1000.
-(algorithm)     Is the factorization algorithm to be implemented and can be one of the following:
+(algorithm)     Is the factorization algorithm or algorithms to be implemented and can be one of the following:
                 Garbell_Eratostenes
                 Rho_Pollard
                 p-1_Pollard
                 Dixon
                 Garbell_quadratic
-                No distinction made between minuscules and capital letters. Default is p-1_pollard.
+                No distinction made between minuscules and capital letters.
+				Default is Garbell_Eratostenes Rho_Pollard p-1_Pollard.
 (primality-test)Is the primality test or tests to be used.
                 It can be one or more of the following:
                 trial_division
