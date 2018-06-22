@@ -53,8 +53,8 @@ def recursive_step(divisor, factorization, primality_tests, factor_base, max_ite
     return factorization
 
 
-def factorize(n, primality_tests=None, factor_base=None, bound=100,
-              max_iters=10000):
+def factorize(n, primality_tests=None, factor_base=None, bound=1000,
+              max_iters=100, show_warning=True):
     # Initialize factorization object.
     factorization = utils.Factorization(n)
     n = abs(n)  # Set n as a positive number to avoid problems.
@@ -69,6 +69,23 @@ def factorize(n, primality_tests=None, factor_base=None, bound=100,
     if primality.is_decomposed(factorization, primality_tests):
         factorization.add_factor(factorization.reduced_value)
         return factorization
+
+    # Look for a non trivial divisor applying quadratic sieve algorithm.
+    divisor = find_divisor(n, factor_base=factor_base, bound=bound, max_iters=max_iters)
+    # If we are able to find such a divisor we apply the algorithm recursively.
+    if divisor not in [1, n]:
+        return recursive_step(divisor, factorization, primality_tests, factor_base, max_iters)
+
+    # If we get no divisor then we return the factorization as it is with a warning that a
+    # different rho function may be able to complete the factorization.
+    if show_warning:
+        print('Warning unable to decompose value {} using dixon factorization.'.format(factorization.reduced_value))
+
+    return factorization
+
+
+def find_divisor(n, factor_base=None, bound=1000, max_iters=100):
+    n = abs(n)  # Set n as a positive number to avoid problems.
 
     # Get a factor base if needed.
     if factor_base is None:
@@ -96,18 +113,16 @@ def factorize(n, primality_tests=None, factor_base=None, bound=100,
         # This numbers square should be congruent to b modulo n.
 
         # Check that if b + c has a common non trivial factor with n.
-        mcd = utils.euclidean_algorithm_m_c_d(b+c, n)
+        mcd = utils.euclidean_algorithm_m_c_d(b + c, n)
         if mcd not in [1, n]:
             # We have found a divisor of n by sheer luck.
-            return recursive_step(mcd, factorization, primality_tests, factor_base, max_iters)
+            return mcd
         # If not check if b - c has a common non trivial factor with n.
-        mcd = utils.euclidean_algorithm_m_c_d(b-c, n)
+        mcd = utils.euclidean_algorithm_m_c_d(b - c, n)
         if mcd not in [1, n]:
             # We have found a divisor of n by sheer luck.
-            return recursive_step(mcd, factorization, primality_tests, factor_base, max_iters)
-        # If this is not the case either we try again.
+            return mcd
 
-    # If we get no divisor then we return the factorization as it is with a warning that a
-    # different rho function may be able to complete the factorization.
-    print('Warning unable to decompose value {} using dixon factorization.'.format(factorization.reduced_value))
-    return factorization
+    # If we are unable to find any non trivial divisor we return a trivial one.
+    return n
+

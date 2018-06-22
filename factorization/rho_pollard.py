@@ -6,17 +6,20 @@ import factorization.primality_tests as primality
 
 def recursive_step(divisor, factorization,
                    primality_tests,
-                   rho_function):
+                   rho_function, max_iters):
     # Get the factorization of the mcd recursively.
-    mcd_factorization = factorize(divisor, primality_tests=primality_tests,
-                                  rho_function=rho_function)
+    mcd_factorization = factorize(divisor,
+                                  primality_tests=primality_tests,
+                                  rho_function=rho_function,
+                                  max_iters=max_iters)
     # append it to the factorization of n.
     factorization = utils.add_divisor_factorization(factorization, mcd_factorization)
 
     # we do the same with the current reduced value of the factorization.
     reduced_value_factorization = factorize(factorization.reduced_value,
                                             primality_tests=primality_tests,
-                                            rho_function=rho_function)
+                                            rho_function=rho_function,
+                                            max_iters=max_iters)
     factorization = utils.add_divisor_factorization(factorization, reduced_value_factorization)
 
     # We now break the loop and return the factorized value.
@@ -24,7 +27,7 @@ def recursive_step(divisor, factorization,
 
 
 def factorize(n, primality_tests=None,
-              rho_function=None, max_iters=10000):
+              rho_function=None, max_iters=100, show_warning=True):
     """
     Applies the rho pollard factorization method
     :param n: Integer to be factorized.
@@ -32,6 +35,7 @@ def factorize(n, primality_tests=None,
     :param rho_function: rho function to be applied.
     :param max_iters: maximum number of times the algorithm should be tried.
     :return: A Factorization object with the factorized integer.
+    :param show_warning: boolean indicating if warnings for factorization fail should be shown.
     """
     # Initialize factorization object.
     factorization = utils.Factorization(n)
@@ -48,7 +52,24 @@ def factorize(n, primality_tests=None,
         factorization.add_factor(factorization.reduced_value)
         return factorization
 
-    # Initialize rho_function.
+    # Look for a non trivial divisor applying quadratic sieve algorithm.
+    divisor = find_divisor(n, rho_function=rho_function, max_iters=max_iters)
+    # If we are able to find such a divisor we apply the algorithm recursively.
+    if divisor not in [1, n]:
+        return recursive_step(divisor, factorization, primality_tests, rho_function, max_iters)
+
+    # If we get no divisor then we return the factorization as it is with a warning that a
+    # different rho function may be able to complete the factorization.
+    if show_warning:
+        print('Warning unable to decompose value {} using rho pollard factorization.'.format(factorization.reduced_value))
+        print('Try a different rho function')
+    return factorization
+
+
+def find_divisor(n, rho_function=None, max_iters=100):
+    n = abs(n)  # Set n as a positive number to avoid problems.
+
+    #  Initialize rho_function.
     if rho_function is None:
         # Random non zero integer for rho function.
         aux = randint(1, n - 1)
@@ -70,22 +91,19 @@ def factorize(n, primality_tests=None,
         # itself but it would be more time consuming.
         while n_bits < n:
             # We iterate over the n_bits +1 bits digits.
-            for i in range(n_bits):
+            for j in range(n_bits):
                 # get next image of rho function
                 last_rho_function_image = rho_function(last_rho_function_image)
 
                 # get maximum common divisor between n and last_rho_function_image-compare_value.
                 mcd = utils.euclidean_algorithm_m_c_d(n, last_rho_function_image-compare_value)
-                # if the mcd is not trivial we continue have found a divisor and we continue the algorithm recursively.
+                # if the mcd is not trivial we return it.
                 if mcd not in [1, n]:
-                    return recursive_step(mcd, factorization, primality_tests, rho_function)
+                    return mcd
 
                 # Else we append the value of the rho cycle to the list.
             # Increase the number of bits. This meets well with the while loop condition.
             n_bits *= 2
 
-    # If we get no divisor then we return the factorization as it is with a warning that a
-    # different rho function may be able to complete the factorization.
-    print('Warning unable to decompose value {} using rho pollard factorization.'.format(factorization.reduced_value))
-    print('Try a different rho function')
-    return factorization
+    # If we are unable to find any non trivial divisor we return a trivial one.
+    return n

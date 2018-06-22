@@ -312,7 +312,7 @@ def get_factorial_modulo(n, mod):
     return prod
 
 
-def get_lower_primes(bound=1000):
+def get_lower_primes(bound=5000):
     """
     Gets all primes lower than bound.
     To get these primes it applies the eratostenes sieve method.

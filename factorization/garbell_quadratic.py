@@ -180,7 +180,7 @@ def recursive_step(divisor, factorization, primality_tests, small_primes, max_it
 
 
 def factorize(n, primality_tests=None, small_primes=None,
-              max_iters=10000):
+              max_iters=100, show_warning=True):
     # Initialize factorization object.
     factorization = utils.Factorization(n)
     n = abs(n)  # Set n as a positive number to avoid problems.
@@ -196,22 +196,44 @@ def factorize(n, primality_tests=None, small_primes=None,
         factorization.add_factor(factorization.reduced_value)
         return factorization
 
+    # Look for a non trivial divisor applying quadratic sieve algorithm.
+    divisor = find_divisor(n, small_primes=small_primes, max_iters=max_iters)
+    # If we are able to find such a divisor we apply the algorithm recursively.
+    if divisor not in [1, n]:
+        return recursive_step(divisor, factorization, primality_tests, small_primes, max_iters)
+
+    # If we get no divisor then we return the factorization as it is with a warning that a
+    # different rho function may be able to complete the factorization.
+    if show_warning:
+        print('Warning unable to decompose value {} using quadratic sieve.'.format(factorization.reduced_value))
+
+    return factorization
+
+
+def find_divisor(n, small_primes=None, max_iters=100):
+    n = abs(n)  # Set n as a positive number to avoid problems.
+
     # Get the P value of the quadratic sieve algorithm.
     P = int(exp(sqrt(log(n) * log(log(n)))))
 
     # Get small primes lower than P.
     if small_primes is None:
         small_primes = utils.get_lower_primes(P)
-    else:
-        small_primes = [p for p in small_primes if p <= P]
+
+    # Get the P value of the quadratic sieve algorithm.
+    P = int(exp(sqrt(log(n) * log(log(n)))))
+
+    # keep only primes lower than P.
+    small_primes = [p for p in small_primes if p <= P]
 
     # Remove from small_primes all odd primes such that the legendre number (n/p) is not 1.
     factor_base = [2] + [p for p in small_primes[1:] if utils.get_jacobi_symbol(n, p) == 1]
 
     # Make sure none of these primes divides n.
     for factor in factor_base:
+        # Maybe we get a divisor by sheer luck.
         if n % factor == 0:
-            return recursive_step(factor, factorization, primality_tests, small_primes, max_iters)
+            return factor
 
     for i in range(max_iters):
         # get a list of bi such that their vector representations in the factor_base sum 0 in Z/(2).
@@ -237,16 +259,11 @@ def factorize(n, primality_tests=None, small_primes=None,
         # Check that if b + c has a common non trivial factor with n.
         mcd = utils.euclidean_algorithm_m_c_d(b + c, n)
         if mcd not in [1, n]:
-            # We have found a divisor of n by sheer luck.
-            return recursive_step(mcd, factorization, primality_tests, small_primes, max_iters)
+            return mcd
         # If not check if b - c has a common non trivial factor with n.
         mcd = utils.euclidean_algorithm_m_c_d(b - c, n)
         if mcd not in [1, n]:
-            # We have found a divisor of n by sheer luck.
-            return recursive_step(mcd, factorization, primality_tests, small_primes, max_iters)
-        # If this is not the case either we try again.
+            return mcd
 
-    # If we get no divisor then we return the factorization as it is with a warning that a
-    # different rho function may be able to complete the factorization.
-    print('Warning unable to decompose value {} using quadratic sieve.'.format(factorization.reduced_value))
-    return factorization
+    # If we are unable to find any non trivial divisor we return a trivial one.
+    return n
