@@ -17,8 +17,10 @@ def factorize(n, max_value=5000, return_found_primes=False):
 
     # Initialize max value if not already initialized.
     if max_value is None:
+        last_is_prime = True
         max_value = int(sqrt(factorization.reduced_value))+1
     else:
+        last_is_prime = False
         max_value = min(max_value, int(sqrt(factorization.reduced_value)) + 1)
 
     # initialize the sieve.
@@ -37,9 +39,9 @@ def factorize(n, max_value=5000, return_found_primes=False):
         max_value = min(int(sqrt(factorization.reduced_value)) + 1, max_value)
         sieve = [i for i in sieve if i % p != 0 and i < max_value]
 
-    # now that the sieve is empty it can either mean two things.
+    # now that the sieve is empty it can either mean two things if max_value was originally None.
     # The first that the reduced value is now a prime number the second that it is 1.
-    if factorization.reduced_value != 1:
+    if last_is_prime:
         factorization.add_factor(factorization.reduced_value)
 
     # Return all prime numbers found if asked so.
