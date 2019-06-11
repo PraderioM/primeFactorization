@@ -31,7 +31,7 @@ where:
                 No distinction made between minuscules and capital letters. Default is miller_rabin.
 
 IMPORTANT:
-Algorithms may work faster if controls for correct inputs are disabled.
+Algorithms are not implemented in an optimal way.
 
 
 License:
