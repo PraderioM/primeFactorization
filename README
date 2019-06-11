@@ -5,10 +5,9 @@ However it is necessary to install sagemath in order to execute the factorizatio
 'garbell_quadratic' and 'Dixon'.
 All implemented algorithms have been extracted from the book 'A Course in Number Theory and Cryptography'
 of 'Springer-Verlag'
-The script can be run from the command line by simply executing either one of the following commands.
+The script can be run from the command line by simply executing the following command.
 
 sage main.py -n (number) -mi (max-iters) --algorithm (algorithm) --primality-test (primality-test)
-python main.py -n (number) -mi (max-iters) --algorithm (algorithm) --primality-test (primality-test)
 
 where:
 (number)        Is an integer to be factorized.
